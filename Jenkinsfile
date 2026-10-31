@@ -4,6 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME = 'student-management'
         IMAGE_TAG  = "${env.BUILD_NUMBER}"
+        PATH = "C:\\Users\\Hasini\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin;${env.PATH}"
     }
 
     stages {
