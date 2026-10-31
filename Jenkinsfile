@@ -11,13 +11,13 @@ pipeline {
             steps { checkout scm }
         }
         stage('Install Dependencies') {
-            steps { sh 'npm install' }
+            steps { bat 'npm install' }
         }
         stage('Test') {
-            steps { sh 'npm test' }
+            steps { bat 'npm test' }
         }
         stage('Docker Build') {
-            steps { sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} -t ${IMAGE_NAME}:latest .' }
+            steps { bat 'docker build -t %IMAGE_NAME%:%IMAGE_TAG% -t %IMAGE_NAME%:latest .' }
         }
     }
 
