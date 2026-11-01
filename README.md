@@ -15,7 +15,7 @@ Node.js + Express REST app with a small web UI, taken through Git, Jenkins, Dock
 ## 1. Run locally
     npm install
     npm start          # http://localhost:3000
-    npm test           # Jest + Supertest
+    npm test           # Karate API tests (needs Java)
 
 ## 2. Git & GitHub
     git init
@@ -38,14 +38,15 @@ Other commands to demonstrate:
     git push origin main
 
 ## 3. Jenkins
-1. Install Jenkins; install Node.js and Docker on the Jenkins machine
+1. Install Jenkins; install Node.js, Java and Docker on the Jenkins machine
    (add the `jenkins` user to the `docker` group, then restart Jenkins).
 2. Dashboard -> New Item -> name it `student-management` -> **Pipeline** -> OK.
 3. Pipeline section: *Pipeline script from SCM* -> Git -> your GitHub repo URL -> branch `*/main`
    -> Script Path `Jenkinsfile`.
-4. (Optional auto trigger) Build Triggers -> *Poll SCM* -> `H/5 * * * *`,
-   or use a GitHub webhook to `http://<jenkins-host>:8080/github-webhook/`.
-5. Click **Build Now** and screenshot the stage view and console output.
+4. Build trigger: Build Triggers -> *Poll SCM* -> `H/2 * * * *`
+   (Jenkins checks GitHub every 2 minutes and builds automatically when there is a new commit).
+5. Push a commit, wait for the automatic build (the console shows "Started by an SCM change"),
+   and screenshot the stage view and console output.
 
 ## 4. Docker
     docker build -t student-management:latest .
@@ -64,11 +65,19 @@ Other commands to demonstrate:
     kubectl get deployments,pods,svc
     minikube service student-management-service --url   # open this URL
 
+If the NodePort (30007) is not reachable from the browser, use port-forward instead:
+
+    kubectl port-forward service/student-management-service 8081:80
+    # open http://localhost:8081
+
 Scale / clean up:
 
     kubectl scale deployment student-management --replicas=3
     kubectl delete -f k8s/
 
 ## 6. Automated tests
-`test/student.test.js` has 6 test cases (Jest + Supertest) covering health, list, create,
-validation error (400), not found (404) and update/delete. Jenkins runs them in the *Test* stage.
+`karate/student.feature` has 5 Karate test scenarios covering health, list, create,
+validation error (400) and not found (404). `npm test` runs `karate/run-karate.js`, which
+downloads the Karate jar, starts the app on port 3456, runs the tests and stops the app.
+Java is required. Jenkins runs them in the *Test* stage. The HTML report is in
+`target/karate-reports/karate-summary.html`.
